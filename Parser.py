@@ -1,53 +1,80 @@
+from UnexpectedSymbolError import UnexpectedSymbolError
 import re
+
+from antlr4.tree.Tree import INVALID_INTERVAL, ParseTree
 from Validator import Validator
 from ParsingData import ParsingData
 from const import DIGITS, TOKENS
 
+REGEX_X2 = r"([\+\-])?((\d+(\.\d+)?)(\*)?)?([\+\-])?(x)(\^2)"
+REGEX_X0 = r"([\+\-])?((\d+(\.\d+)?)(\*)?)?([\+\-])?(x)(\^0)"
+REGEX_X1 = r"([\+\-])?((\d+(\.\d+)?)(\*)?)?([\+\-])?(x)(\^1)?"
+REGEX_C = r"([\+\-])?((\d+(\.\d+)?)(\*)?)?([\+\-])?(x)?(\^1)?"
+
 
 class Parser():
 
-    def Parser(self, data):
+    def __init__(self):
         self.data = ParsingData()
 
     def parse(self, line):
         validator = Validator()    
         if not validator.is_valid(line):
             return
-        self.__parse_by_char(line)    
+        splitted = line.split('=')
+        l = [[splitted[0], 1], [splitted[1], -1]]
+        for part, sign in l:
+            self.data.line = part
+            self.__parse(REGEX_X2, sign)
+            self.__parse(REGEX_X0, sign)
+            self.__parse(REGEX_X1, sign)
+            self.__parse(REGEX_C, sign)
+            if self.data.line:
+                raise UnexpectedSymbolError(self.data.line[0], self.data.position[0])
+        return self.data
 
-    def __is_digit(self, c):
-        return c in DIGITS
+    def __delete_added(self, match):
+        sign_str, _, number_str, _, \
+            asterix_str, x_sign_str, var_str, var_exp = match
+
+        to_replace = sign_str + number_str + asterix_str \
+             + x_sign_str + var_str + var_exp
+        line = self.data.line
+        position = self.data.position
+        f = line.find(to_replace)
+        self.data.line = line[:f] + line[f + len(to_replace):]
+        self.data.position = position[:f] + position[f + len(to_replace):]
+        return
+
+    def __add_value(self, value, regex_str):
+        if regex_str == REGEX_X2:
+            self.data.x2 += value
+        elif regex_str == REGEX_X1:
+            self.data.x1 += value
+        elif (
+            regex_str == REGEX_X0 or
+            regex_str == REGEX_C
+            ):
+            self.data.c += value
+
+    def __parse(self, regex_str, sign_base):
+
+        matches = re.findall(regex_str, self.data.line)
+        for match in matches:
+            sign_str = match[0]
+            number_str = match[2]
+            sign = 1 if sign_str != '-' else -1
+            if number_str:
+                value = float(number_str)
+            elif match[6]:
+                value = 1
+            else:
+                value = 0
+            self.__add_value(value * sign * sign_base, regex_str)
+            self.__delete_added(match)
+        return
+
     
-     # "5 * X^0 + 4 * X^1 - 9.3 * X^2 = 1 * X^0"
 
-    def __parse_number(self, line, i):
-        with self.data:
-            i_start = i
-            token_type = TOKENS.NUMBER
-            
-            while i < len(line):
-                c = line[i]
-                if not self.__is_digit(c) and c != '.':
-                    break
-                i += 1
-
-            if i < len(line) and line[i] == 'i':
-                i += 1
-                token_type = TOKENS.IMAGINARY
-            value = line[i_start : i]
-
-        return Token(value, token_type), i
-
-    @classmethod
-    def __parse_by_char(self, line):
-        data.i = 0
-        data.line = line
-        while data.i < len(line):
-            if is_digit(data.line[data.i]):
-                __parse_number(self)
-            elif is_operator(data.line[data.i]):
-                __parse_operator(self)
-            data.i += 1
-        
-        #if not re.findall():
+    
         

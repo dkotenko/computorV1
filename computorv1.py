@@ -3,7 +3,7 @@ from UnexpectedSymbolError import UnexpectedSymbolError
 import fileinput
 from Parser import Parser
 from Solver import Solver
-from const import VALID_ARGS, VERBOSE_MODE, TEST_MODE
+from const import RESET, VALID_ARGS, YELLOW
 import sys
 import re
 from const import Mode
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         if line == 'exit':
             exit()
         if Mode.VERBOSE_MODE:
-            print(f'INPUT: {line}')
+            print(f'{YELLOW}INPUT: {line}{RESET}')
         validator = Validator()    
         if not validator.is_valid(line):
             continue

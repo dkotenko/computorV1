@@ -1,7 +1,7 @@
 from os import stat
 from ParsingData import ParsingData
 from Math import Math
-from const import RED, RESET
+from const import GREEN, RED, RESET
 from const import Mode
 import re
 
@@ -12,7 +12,8 @@ class Printer:
     @staticmethod
     def print_endline():
         if Mode.VERBOSE_MODE:
-            print('=' * 100)
+            print(GREEN, '=' * 100, RESET)
+
 
     @staticmethod
     def print_infinity():

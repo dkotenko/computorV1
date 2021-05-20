@@ -1,8 +1,7 @@
 from UnexpectedSymbolError import UnexpectedSymbolError
 import re
 
-from antlr4.tree.Tree import INVALID_INTERVAL, ParseTree
-from Validator import Validator
+
 from ParsingData import ParsingData
 from const import DIGITS, TOKENS
 
@@ -18,9 +17,7 @@ class Parser():
         self.data = ParsingData()
 
     def parse(self, line):
-        validator = Validator()    
-        if not validator.is_valid(line):
-            return
+        
         splitted = line.split('=')
         l = [[splitted[0], 1], [splitted[1], -1]]
         for part, sign in l:

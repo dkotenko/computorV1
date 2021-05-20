@@ -46,7 +46,7 @@ class Validator:
         negative_power = line.find("^-")
         if negative_power > -1:
             return Printer.print_error(
-                "Negative power at position %d" % negative_power)
+                "negative power at position %d" % negative_power)
         temp_re = re.findall(r"[*/\-+^]{2}", line)
         if temp_re:
             return Printer.print_error(
@@ -57,13 +57,19 @@ class Validator:
                 "invalid operator order: %s" % temp_re[0])
         return True
     
+    def is_valid_variable(self, line):
+        if re.findall(r"\dx", line):
+            return Printer.print_error(
+                "x variable and digits must be separated by * sign")
+        return True
     
     def is_valid(self, line):
         self.curr_line = line
         if (
             not self.is_valid_equity_sign(line) or
             not self.is_valid_dots(line) or
-            not self.is_valid_operators(line)
+            not self.is_valid_operators(line) or
+            not self.is_valid_variable(line)
         ):
             return False
         return True

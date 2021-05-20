@@ -19,8 +19,6 @@ class ParsingData(object):
         self.position = list(range(len(self.line)))
         pass
 
-    
-
     def clean(self):
         self.x2 = 0
         self.x1 = 0

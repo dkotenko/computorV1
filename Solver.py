@@ -1,5 +1,7 @@
+from re import VERBOSE
 from Printer import Printer
-from const import EPSILON
+from const import EPSILON, Mode
+from Math import Math
 
 class Solver():
     def __init__(self, data) -> None:
@@ -28,21 +30,47 @@ class Solver():
         b = self.data.x1
         c = self.data.c
         d = b ** 2 - 4 * a * c
+        if Mode.VERBOSE_MODE:
+            print("Discriminant calculation:")
+            print(f"\tD = b ^ 2 - 4ac = {b ** 2} - {4 * a * c} = {d}")
         if d > 0:
             x1 = (-b + self.squareRoot(d)) / (2 * a)
             x2 = (-b - self.squareRoot(d)) / (2 * a)
+            if Mode.VERBOSE_MODE:
+                print('Roots calculation:')
+                print(f'\tx1 = (-b + squareRoot(d)) / (2 * a) = \
+                    ({-b} + {self.squareRoot(d)}) / {2 * a}')
+                print(f'\tx2 = (-b - squareRoot(d)) / (2 * a) = \
+                    ({-b} - {self.squareRoot(d)}) / {2 * a}')
             Printer.print_positive(x1, x2)
-        elif d == 0 or d < 0:
+        elif d == 0:
             x1 = (-b / (2 * a))
+            if Mode.VERBOSE_MODE:
+                print('Root calculation:')
+                print(f'\tx1 = -b / (2 * a) = {-b} / {2 * a}')
             Printer.print_zero(x1)
         elif d < 0:
-            b_calc = f'{(-b / (2 * a)):.6f}'
-            x1 = f'{b_calc} + {self.squareRoot(d)} * i'
-            x2 = f'{b_calc} - {self.squareRoot(d)} * i'
+            b_float = -b / (2 * a)
+            d_str = Printer.get_float_string(
+                Math.abs(self.squareRoot(-d) / (2 * a)))
+            if not Math.is_equal(b_float, 0):
+                b_str = Printer.get_float_string(b_float)
+                x1 = f'{b_str} + {d_str} * i'
+                x2 = f'{b_str} - {d_str} * i'
+            else:
+                x1 = f'{d_str} * i'
+                x2 = f'-{d_str} * i'
+            if Mode.VERBOSE_MODE:
+                print('Roots calculation:')
+                print(f'\tx1 = -b / (2 * a) + squareRoot(-d) / (2 * a) * i = ', end='')
+                print(f'{-b} / ({2*a}) + ', end='')
+                print(f'{Printer.get_float_string(self.squareRoot(-d))} / ({2*a}) * i')
+                print(f'\tx2 = -b / (2 * a) - squareRoot(-d) / (2 * a) * i = ', end='')
+                print(f'{-b} / ({2*a}) - ', end='')
+                print(f'{Printer.get_float_string(self.squareRoot(-d))} / ({2*a}) * i')
             Printer.print_negative(x1, x2)
 
     def solve(self):
-        Printer.print_reduced_form(self.data)
         if self.data.x1 == 0 and self.data.x2 == 0:
             if self.data.c == 0:
                 Printer.print_infinity() 

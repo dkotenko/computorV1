@@ -30,8 +30,6 @@ def check_input_source():
         return
     for filename in sys.argv[1:]:
         if filename in VALID_ARGS:
-            if filename == "--test":
-                Mode.TEST_MODE = True
             if filename == "--verbose":
                 Mode.VERBOSE_MODE = True
             continue
@@ -40,7 +38,6 @@ def check_input_source():
             f.close()
         except FileNotFoundError:
             Printer.print_error(f"file {filename} not accessible")
-            f.close()
             exit()
 
 def get_polynomial_degree(line):
@@ -68,6 +65,10 @@ def get_filenames():
             filenames.append(filename)
     return filenames
 
+def handle_unexpected_symbol(e):
+    text = 'unexpected symbol(s) at position'
+    Printer.print_error(f'{text} {e.position}: {e.symbol}')
+
 if __name__ == "__main__":
     check_input_source()
     filenames = get_filenames()
@@ -82,23 +83,25 @@ if __name__ == "__main__":
         validator = Validator()    
         if not validator.is_valid(line):
             continue
+        parser = Parser()
+        try:
+            line = do_replace(Parser.get_reduced_form(line))
+        except UnexpectedSymbolError as e:
+            handle_unexpected_symbol(e)
+            continue
         Printer.print_reduced_form(line)
         polynominal_degree = get_polynomial_degree(line)
         print_polynomial_degree(polynominal_degree)
         if polynominal_degree > 2:
             Printer.print_greater_degree()
             continue
-        parser = Parser()
         try:
             data = parser.parse(line)
             if not data:
                 continue
             solver = Solver(data)
             solved =  solver.solve()
-            if Mode.TEST_MODE:
-                pass
         except UnexpectedSymbolError as e:
-            text = 'unexpected symbol(s) at position'
-            Printer.print_error(f'{text} {e.position}: {e.symbol}')
+            handle_unexpected_symbol(e)
         parser.data.clean()
 

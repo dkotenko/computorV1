@@ -3,14 +3,12 @@ from enum import Enum
 EPSILON = 0.000001
 OPERATORS = r"\*\/\-\+\^"
 DIGITS = "0123456789"
-VALID_ARGS = ["--test", "--verbose"]
+VALID_ARGS = ["--verbose"]
 
 VERBOSE_MODE = False
-TEST_MODE = False
 
 class Mode:
     VERBOSE_MODE = False
-    TEST_MODE = False
 
 
 BLACK = '\033[30m'

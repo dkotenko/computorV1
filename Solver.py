@@ -38,10 +38,10 @@ class Solver():
             x2 = (-b - self.squareRoot(d)) / (2 * a)
             if Mode.VERBOSE_MODE:
                 print('Roots calculation:')
-                print(f'\tx1 = (-b + squareRoot(d)) / (2 * a) = \
-                    ({-b} + {self.squareRoot(d)}) / {2 * a}')
-                print(f'\tx2 = (-b - squareRoot(d)) / (2 * a) = \
-                    ({-b} - {self.squareRoot(d)}) / {2 * a}')
+                print(f'\tx1 = (-b + squareRoot(d)) / (2 * a) = ({-b} + ', end='')
+                print(f'{self.squareRoot(d)}) / {2 * a}')
+                print(f'\tx2 = (-b - squareRoot(d)) / (2 * a) = ({-b} - ', end='')
+                print(f'{self.squareRoot(d)}) / {2 * a}')
             Printer.print_positive(x1, x2)
         elif d == 0:
             x1 = (-b / (2 * a))

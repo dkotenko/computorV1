@@ -1,9 +1,5 @@
-from os import stat
-from ParsingData import ParsingData
-from Math import Math
-from const import GREEN, RED, RESET
+from const import GREEN, RED, RESET, YELLOW
 from const import Mode
-import re
 
 class Printer:
     def __init__(self) -> None:
@@ -46,59 +42,8 @@ class Printer:
         Printer.print_endline()
 
     @staticmethod
-    def print_reduced_form(line: str):
-
-        def get_values(part, sign, d):
-
-            def add_to_dict(d, value, degree, sign):
-                if degree in d:
-                    d[degree] += (value * sign)
-                else:
-                    d[degree] = (value * sign)
-
-            def add_number(d, token, sign):
-                value = float(token)
-                degree = 0
-                add_to_dict(d, value, degree, sign)
-
-            def add_var(d, token, sign):
-                if token.find('*') > -1:
-                        value = float(token.split('*')[0])
-                else:
-                    value = 1
-                if token.find('^') > -1:
-                    degree = int(token.split('^')[1])
-                else:
-                    degree = 1
-                add_to_dict(d, value, degree, sign)
-
-            splitted_by_plus_minus = re.split(r"\+|\-", part)
-            for token in splitted_by_plus_minus:
-                if not token:
-                    continue
-                if token.find('x') > -1:
-                    add_var(d, token, sign)    
-                else:
-                    add_number(d, token, sign)
-
-        by_equity_sign = line.split('=')
-        left, right = by_equity_sign
-        d = {}
-        get_values(left, 1, d)
-        get_values(right, -1, d)
-        i = 0
-
-        print('Reduced form: ', end='')
-        for key in sorted(list(d.keys())):
-            if d[key] == 0:
-                continue
-            if i:
-                sign_symbol = '+' if d[key] > -1 else '-'
-                print(f' {sign_symbol} ', end='')
-            value_str = Printer.get_float_string(Math.abs(d[key]))
-            print(f'{value_str} * X^{key}',end='')
-            i += 1
-        print(' = 0')
+    def print_reduced_form(line):
+        print(f'{YELLOW}Reduced form: {line}{RESET}')
 
    
     @staticmethod
@@ -115,6 +60,8 @@ class Printer:
 
     @staticmethod
     def get_float_string(value):
+        if value == -0.0:
+            value = 0.0
         return f'{value:.6f}'.rstrip('0').rstrip('.')
 
         

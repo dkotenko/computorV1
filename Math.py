@@ -1,4 +1,6 @@
 from const import EPSILON
+import re
+from UnexpectedSymbolError import UnexpectedSymbolError
 
 class Math:
     @staticmethod
@@ -29,5 +31,28 @@ class Math:
         if not divider:
             print("modulo by zero error")
         return value // divider
+
+    @staticmethod
+    def eval_value(value, expression):
+        if re.sub(expression, '', value):
+            a = re.sub(expression, '', value)
+            position = value.find(a)
+            raise UnexpectedSymbolError(a, position)
+        
+
+    @staticmethod
+    def eval_float(value):
+        if str(value).find('.') == -1:
+            Math.eval_int(value)
+        else:
+            r = r'\-?\d+\.?\d+'
+            Math.eval_value(value, r)
+        return float(value)
+
+    @staticmethod
+    def eval_int(value):
+        r = r'\-?\d+'
+        Math.eval_value(value, r)
+        return int(value)
 
     

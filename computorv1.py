@@ -69,7 +69,7 @@ def handle_unexpected_symbol(e):
     text = 'unexpected symbol(s) at position'
     Printer.print_error(f'{text} {e.position}: {e.symbol}')
 
-if __name__ == "__main__":
+def main():
     check_input_source()
     filenames = get_filenames()
     for line in fileinput.input(filenames):
@@ -104,4 +104,11 @@ if __name__ == "__main__":
         except UnexpectedSymbolError as e:
             handle_unexpected_symbol(e)
         parser.data.clean()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        exit()
+    
 
